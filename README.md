@@ -1,2 +1,2 @@
 # sublime-plugins
-Collection of sublime plugins
+Collection of Sublime Text plugins.
