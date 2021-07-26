@@ -11,6 +11,7 @@ from pathlib import Path
 # This setting affects the number of entries we *show* on the quick panel. It
 # has no effect on the number of entries we store.
 QUICK_PANEL_MAX_ENTRIES = 30
+QUICK_PANEL_MAX_PATH_DISPLAY_LEN = 80
 MRU_FILE_NAME = ".sublime-mru"
 MSG_NO_MRU_FILES = "There are no recently used files."
 
@@ -19,18 +20,28 @@ class Mru():
     # where the *key* is the caption we use for the quick_panel and *value*
     # is the absolute file path that allows us to open the selected item.
     def describe_mru_files(self):
+        files_descriptions = []
         if self.mru_file_exists():
-            files_descriptions = []
+            padding = len(self.longest_file_name())
             with open(self.mru_file_fullpath(), "r") as f:
                 for line in f:
                     file_path = line.strip()
                     if file_path:
                         files_descriptions.append({
-                            "file_description": self.describe_file(file_path),
+                            "file_description": self.describe_file(file_path, padding),
                             "full_path": file_path
                         }
                     )
-            return files_descriptions
+        return files_descriptions
+
+    def longest_file_name(self):
+        longest_file_name = ""
+        with open(self.mru_file_fullpath(), "r") as f:
+            for line in f:
+                file_name = os.path.basename(line.strip())
+                if len(file_name) > len(longest_file_name):
+                    longest_file_name = file_name
+        return longest_file_name
 
     # Returns a list of MRU files paths.
     def read_mru_file(self):
@@ -58,13 +69,16 @@ class Mru():
 
     # Returns a string in the form of:
     # foo.txt (/Users/jane/tmp/foo.txt)
-    def describe_file(self, file_path):
-        return os.path.basename(file_path) + " (" + file_path + ")"
+    def describe_file(self, file_path, padding):
+        return os.path.basename(file_path).ljust(padding) + " | " + self.project_relative_path(file_path)
 
     def mru_file_exists(self):
         full_path = self.mru_file_fullpath()
         if Path(full_path).is_file():
             return True
+
+    def project_relative_path(self, file_path):
+        return file_path.replace(self.current_project_path() + "/", "")[:QUICK_PANEL_MAX_PATH_DISPLAY_LEN]
 
     def mru_file_fullpath(self):
         home = os.path.expanduser("~")
@@ -85,7 +99,7 @@ class MruClearCommand(sublime_plugin.WindowCommand, Mru):
 class MruCommand(sublime_plugin.WindowCommand, Mru):
     def run(self):
         files_descriptions = self.describe_current_project_mru_files()
-        if files_descriptions:
+        if len(files_descriptions) > 0:
             items = [x["file_description"] for x in files_descriptions]
             self.window.show_quick_panel(
                 items=items[:QUICK_PANEL_MAX_ENTRIES],
@@ -101,7 +115,7 @@ class MruCommand(sublime_plugin.WindowCommand, Mru):
 
     def current_project_path(self):
         folders = self.window.folders()
-        return folders[0] if len(folders) else ""
+        return folders[0] if len(folders) > 0 else ""
 
     def open_file(self, mru_files, idx):
         if idx >= 0:
