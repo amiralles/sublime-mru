@@ -15,7 +15,7 @@ At the moment, there is no "official" packge to install this plugin, but you can
 Once you did that, just add a shortcut to run the `mru` command and trigger the autocomplete list. For instance:
 
 ```json
-{ "keys": ["ctrl+,"], "command": "save"}
+{ "keys": ["ctrl+,"], "command": "mru"}
 ```
 
 ## TODO
