@@ -10,7 +10,7 @@ from vim and missing the [MRU](https://github.com/yegappan/mru) plugin, you may 
 https://user-images.githubusercontent.com/2120820/127004743-e27bd9af-57f1-4352-b26d-2e0c02993350.mp4
 
 ### Installation
-At the moment, there is no "official" packge to install this plugin, but you can still uset it by copying `mru.py` into `<Sublime's Installation Path>/Packages/User`.
+At the moment, there is no "official" pacakge to install this plugin, but you can still uset it by copying `mru.py` into `<Sublime's Installation Path>/Packages/User`.
 
 Once you did that, just add a shortcut to run the `mru` command and trigger the autocomplete list. For instance:
 
