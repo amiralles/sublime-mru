@@ -11,7 +11,7 @@ from pathlib import Path
 # This setting affects the number of entries we *show* on the quick panel. It
 # has no effect on the number of entries we store.
 QUICK_PANEL_MAX_ENTRIES = 30
-QUICK_PANEL_MAX_PATH_DISPLAY_LEN = 80
+QUICK_PANEL_MAX_PATH_DISPLAY_LEN = 120
 MRU_FILE_NAME = ".sublime-mru"
 MSG_NO_MRU_FILES = "There are no recently used files."
 
@@ -22,7 +22,8 @@ class Mru():
     def describe_mru_files(self):
         files_descriptions = []
         if self.mru_file_exists():
-            padding = len(self.longest_file_name())
+            # padding = len(self.longest_file_name())
+            padding = 0
             with open(self.mru_file_fullpath(), "r") as f:
                 for line in f:
                     file_path = line.strip()
@@ -70,7 +71,7 @@ class Mru():
     # Returns a string in the form of:
     # foo.txt (/Users/jane/tmp/foo.txt)
     def describe_file(self, file_path, padding):
-        return os.path.basename(file_path).ljust(padding) + " | " + self.project_relative_path(file_path)
+        return os.path.basename(file_path) + " (" + self.project_relative_path(file_path) + ")"
 
     def mru_file_exists(self):
         full_path = self.mru_file_fullpath()
